@@ -10,4 +10,9 @@ export default defineConfig([
   },
   tseslint.configs.recommended,
   endormoon,
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
 ]);

@@ -20,6 +20,6 @@ const googleSheetService = new GoogleSheetService(googleAuthService);
 const speechService = new SpeechService(googleSheetService);
 
 app.use('/auth', authRoute(googleAuthService));
-app.use('/speech', speechRoute(speechService));
+app.use('/speeches', speechRoute(speechService));
 
 export default app;

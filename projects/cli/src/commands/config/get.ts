@@ -1,27 +1,33 @@
-import { Args, Command, Flags } from '@oclif/core';
+import { Args, Command } from '@oclif/core';
+import { BAROUK_FLAGS } from '../../flags/barouk-flags.js';
+import { BaroukConfigService } from '../../configs/barouk-config-service.js';
+import { BAROUK_CONFIG_KEYS } from '../../configs/barouk-config.js';
 
 export default class ConfigGet extends Command {
+  public static override enableJsonFlag = true;
   public static override args = {
-    file: Args.string({description: 'file to read'}),
+    key: Args.string({
+      required: true,
+      description: 'The config key',
+      options: BAROUK_CONFIG_KEYS,
+    }),
   };
   public static override description = 'describe the command here';
   public static override examples = [
     '<%= config.bin %> <%= command.id %>',
   ];
   public static override flags = {
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
+    ...BAROUK_FLAGS,
   };
 
-  public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ConfigGet);
-
-    const name = flags.name ?? 'world';
-    this.log(`hello ${name} from /home/aymerichenouille/Documents/Projects/perso/cli/barouk/projects/cli/src/commands/config/get.ts`);
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`);
-    }
+  public async run(): Promise<{ result: any }> {
+    const { args, flags } = await this.parse(ConfigGet);
+    const baroukConfigService = new BaroukConfigService(flags);
+    const map = await baroukConfigService.getConfigMap();
+    if (!map.has(args.key))
+      this.error(`The key ${args.key} doesn't exist`);
+    const result = map.get(args.key);
+    this.log(`${args.key}=${result}`);
+    return { result };
   }
 }
