@@ -1,11 +1,13 @@
-import app from './app.js';
 import dotenv from 'dotenv';
+import { Options } from './models/options.model.js';
+import app from './app.js';
 
 dotenv.config({ quiet: true });
-const listenPort = process.env.PORT;
+const options = Options.parse(process.env);
 
-app.listen(listenPort, () => {
-  console.info(`🚀 Barouk server listening on port: ${listenPort}`);
+app(options).listen(options.PORT, () => {
+  console.info(`🚀 Barouk server listening on port: ${options.PORT}`);
 }).on('error', (error) => {
   throw new Error(error.message);
 });
+

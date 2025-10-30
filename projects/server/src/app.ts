@@ -1,25 +1,27 @@
-import express from 'express';
-import session from 'express-session';
+import express, { type Express } from 'express';
+import baroukSession from './session.js';
 import authRoute from './routes/auth.route.js';
 import speechRoute from './routes/speech.route.js';
 import GoogleAuthService from './services/google-auth.service.js';
 import GoogleSheetService from './services/google-sheet.service.js';
 import SpeechService from './services/speech.service.js';
+import type { Options } from './models/options.model.js';
 
-const app = express();
-app.use(session({
-  name: 'barouk.sid',
-  secret: 'secret hash',
-  saveUninitialized: true,
-  resave: false,
-  cookie: { secure: false },
-}));
+export default function(options: Options): Express  {
+  const app = express();
 
-const googleAuthService = new GoogleAuthService();
-const googleSheetService = new GoogleSheetService(googleAuthService);
-const speechService = new SpeechService(googleSheetService);
+  const production = options.NODE_ENV === 'production';
+  if (production) app.set('trust proxy', 1);
 
-app.use('/auth', authRoute(googleAuthService));
-app.use('/speeches', speechRoute(speechService));
+  app.use(express.json());
+  app.use(baroukSession(options));
+  
+  const googleAuthService = new GoogleAuthService(options);
+  const googleSheetService = new GoogleSheetService(googleAuthService);
+  const speechService = new SpeechService(googleSheetService);
+  
+  app.use('/auth', authRoute(googleAuthService));
+  app.use('/speeches', speechRoute(speechService));
 
-export default app;
+  return app;
+};

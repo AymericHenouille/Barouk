@@ -10,10 +10,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "connect-redis": "^9.0.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
-    "googleapis": "^155.0.1"
+    "googleapis": "^155.0.1",
+    "redis": "^5.9.0",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",

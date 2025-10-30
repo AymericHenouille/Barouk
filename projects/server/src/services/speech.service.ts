@@ -1,3 +1,4 @@
+import type { Request } from 'express';
 import type GoogleSheetService from './google-sheet.service.js';
 
 export default class SpeechService {
@@ -6,9 +7,9 @@ export default class SpeechService {
     private readonly googleSheetService: GoogleSheetService,
   ) { }
 
-  public async getSpeechs(sessionID: string): Promise<string> {
+  public async getSpeechs(request: Request): Promise<string> {
     const rows = await this.googleSheetService.getSheetData(
-      sessionID,
+      request,
       SpeechService.SPEECH_SPREAD_SHEET_ID,
       'Discours et Orateurs!A4:D4',
     );
