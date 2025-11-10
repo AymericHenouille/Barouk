@@ -4,6 +4,7 @@ import type { BaroukOptions } from '../flags/barouk-flags.js';
 import { existsSync } from 'fs';
 import { dirname } from 'path';
 import { createSpinner } from '../logger/spinner.js';
+import { CookieJar } from 'tough-cookie';
 
 /**
  * Service used to manage the authentification to the barouk server.
@@ -11,6 +12,7 @@ import { createSpinner } from '../logger/spinner.js';
 export class AuthService {
   /**
    * Create a new instance the of auth service.
+   * @param {BaroukConfigService} baroukOptions - The options used by tha app.
    * @param {BaroukConfigService} configService - The config service.
    */
   public constructor(
@@ -33,6 +35,15 @@ export class AuthService {
       if (spinner) spinner.text = 'Login with google';
       return '';
     }, this.baroukOptions);
+  }
+
+  private async loadJar(): Promise<CookieJar> {
+    const jarPath = this.baroukOptions['session-file'];
+    if (existsSync(jarPath)) return new CookieJar();
+    const jarBuffer = await readFile(jarPath);
+    const jarContent = jarBuffer.toString('utf-8');
+    const jar = JSON.parse(jarContent);
+    return CookieJar.deserialize(jar);
   }
 
   private async getSessionId(): Promise<string> {
